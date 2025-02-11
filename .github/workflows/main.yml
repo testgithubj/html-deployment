@@ -3,7 +3,7 @@ name: Deploy HTML Page to AWS EC2
 on:
   push:
     branches:
-      - main # Trigger deploy on push to main branch
+      - main  # Trigger deploy on push to main branch
 
 jobs:
   deploy:
@@ -16,19 +16,19 @@ jobs:
 
       # Step 2: Set up SSH
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@0.5.3
         with:
           ssh-private-key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
 
       # Step 3: Copy files to EC2
       - name: Copy files to EC2
         run: |
-          scp -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/
+          scp -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@13.212.99.124:/home/ec2-user/
 
       # Step 4: SSH to EC2 and deploy
       - name: SSH to EC2 and deploy
         run: |
-          ssh -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ec2-user@13.212.99.124 << 'EOF'
             sudo mv /home/ec2-user/index.html /usr/share/nginx/html/
             sudo systemctl restart nginx
           EOF
