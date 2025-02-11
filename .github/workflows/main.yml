@@ -10,11 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code from the repository
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Copy files to EC2
-      - name: Copy files to EC2
-        run: |
-          scp -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/
+    - name: Set up SSH key
+      run: |
+        # Create a file for the SSH key and set the right permissions
+        echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > my-aws-key.pem
+        chmod 600 my-aws-key.pem
+
+    - name: Copy files to EC2
+      run: |
+        # Using the private key to copy files over to EC2 instance
+        scp -i my-aws-key.pem -o StrictHostKeyChecking=no index.html ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/
