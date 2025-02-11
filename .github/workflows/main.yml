@@ -1,0 +1,30 @@
+name: Deploy HTML Page to AWS EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger deploy on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+
+    - name: Copy files to EC2
+      run: |
+        scp -i ${{ secrets.AWS_SSH_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/
+
+    - name: SSH to EC2 and deploy
+      run: |
+        ssh -i ${{ secrets.AWS_SSH_KEY }} -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          sudo mv /home/ec2-user/index.html /usr/share/nginx/html/
+          sudo systemctl restart nginx
+        EOF
