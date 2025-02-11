@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Checkout code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Copy files to EC2
-      run: |
-        scp -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/
+      # Copy files to EC2
+      - name: Copy files to EC2
+        run: |
+          scp -i ${{ secrets.AWS_SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no index.html ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/
